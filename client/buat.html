@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Buat Surat · SuratApp</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="index.html" class="brand">SuratApp</a>
+    <nav>
+      <a href="index.html">Dashboard</a>
+      <a href="arsip.html">Arsip</a>
+      <a href="template.html">Template</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container" id="app"></main>
+
+<script src="data.js"></script>
+<script>
+const app = document.getElementById("app");
+const key = new URLSearchParams(location.search).get("key");
+
+if (!key) {
+  // Step 1: pilih jenis surat
+  const list = getTemplates();
+  app.innerHTML = `
+    <h1 class="page-title">Buat Surat</h1>
+    <p class="page-sub">Pilih jenis surat.</p>
+    <div class="categories">
+      ${list.map(t => `
+        <a class="category" href="buat.html?key=${encodeURIComponent(t.key)}">
+          <h3>${t.nama}</h3>
+          <p>${t.fields.length} field</p>
+        </a>
+      `).join("") || '<div class="empty">Belum ada template.</div>'}
+    </div>`;
+} else {
+  // Step 2: isi form
+  const tpl = getTemplate(key);
+  if (!tpl) {
+    app.innerHTML = '<div class="empty">Template tidak ditemukan.</div>';
+  } else {
+    app.innerHTML = `
+      <h1 class="page-title">Buat Surat</h1>
+      <p class="page-sub">${tpl.nama}</p>
+
+      <form id="form">
+        <div class="section">
+          <div class="section-title">Informasi Internal (tidak tercetak)</div>
+          <div class="form-group">
+            <label>Pembuat Surat</label>
+            <input type="text" name="created_by" placeholder="Nama pembuat" required>
+            <div class="hint">Hanya untuk arsip. Tidak muncul di surat.</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Penandatangan (tercetak)</div>
+          <div class="form-group">
+            <label>Jabatan</label>
+            <textarea name="signer_jabatan" placeholder="An. KEPALA DINAS ... / Plt. Kabid ..." required></textarea>
+          </div>
+          <div class="form-group">
+            <label>Nama</label>
+            <input type="text" name="signer_nama" required>
+          </div>
+          <div class="form-group">
+            <label>NIP</label>
+            <input type="text" name="signer_nip">
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Isi Surat (tercetak)</div>
+          ${tpl.fields.map(renderField).join("")}
+        </div>
+
+        <div class="row-between mt-4">
+          <a class="btn" href="buat.html">Kembali</a>
+          <button type="submit" class="btn btn-primary">Simpan & Preview</button>
+        </div>
+      </form>`;
+
+    document.getElementById("form").addEventListener("submit", e => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+
+      const data = {};
+      tpl.fields.forEach(f => data[f.name] = fd.get(f.name) || "");
+
+      const letter = {
+        template_key: key,
+        nomor_surat: data.nomor_surat || "",
+        created_by: fd.get("created_by"),
+        signer_mode: "manual",
+        signer_nama: fd.get("signer_nama"),
+        signer_jabatan: fd.get("signer_jabatan"),
+        signer_nip: fd.get("signer_nip"),
+        data,
+        status: "draft"
+      };
+
+      const saved = addLetter(letter);
+      location.href = "preview.html?id=" + saved.id;
+    });
+  }
+}
+
+function renderField(f) {
+  const req = f.required ? "required" : "";
+  let input = "";
+
+  if (f.type === "textarea") {
+    input = `<textarea name="${f.name}" ${req}></textarea>`;
+  } else if (f.type === "select") {
+    input = `<select name="${f.name}" ${req}>
+      <option value="">-- pilih --</option>
+      ${(f.options || []).map(o => `<option>${o}</option>`).join("")}
+    </select>`;
+  } else if (f.type === "date") {
+    input = `<input type="date" name="${f.name}" ${req}>`;
+  } else {
+    input = `<input type="text" name="${f.name}" ${req}>`;
+  }
+
+  return `<div class="form-group"><label>${f.label}</label>${input}</div>`;
+}
+</script>
+</body>
+</html>
