@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Template · SuratApp</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="index.html" class="brand">SuratApp</a>
+    <nav>
+      <a href="index.html">Dashboard</a>
+      <a href="arsip.html">Arsip</a>
+      <a href="template.html" class="active">Template</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <div class="row-between mb-4">
+    <div>
+      <h1 class="page-title">Edit Isi Surat</h1>
+      <p class="page-sub">Kelola jenis surat, template, dan field.</p>
+    </div>
+    <a class="btn btn-primary" href="edit.html">+ Template Baru</a>
+  </div>
+  <div class="card" id="list"></div>
+</main>
+
+<script src="data.js"></script>
+<script>
+const list = getTemplates();
+const el = document.getElementById("list");
+
+if (list.length === 0) {
+  el.innerHTML = '<div class="empty">Belum ada template.</div>';
+} else {
+  el.innerHTML = `
+    <table>
+      <thead><tr><th>Key</th><th>Nama</th><th>Field</th><th></th></tr></thead>
+      <tbody>
+        ${list.map(t => `
+          <tr>
+            <td><code>${t.key}</code></td>
+            <td>${t.nama}</td>
+            <td>${t.fields.length}</td>
+            <td class="row">
+              <a class="btn btn-sm" href="edit.html?key=${encodeURIComponent(t.key)}">Edit</a>
+              <button class="btn btn-sm btn-danger" onclick="hapus('${t.key}')">Hapus</button>
+            </td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>`;
+}
+
+function hapus(key) {
+  if (confirm("Hapus template " + key + "?")) {
+    deleteTemplate(key);
+    location.reload();
+  }
+}
+</script>
+</body>
+</html>
