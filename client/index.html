@@ -12,7 +12,7 @@
   <!-- LEFT -->
   <aside class="split-left">
     <a href="dashboard.html" class="brand">
-      <span class="brand-mark">S</span> SURATAPP
+      <span class="brand-mark">S</span> DINAS KEPENDUDUKAN DAN PENCATATAN SIPIL KABUPATEN TUBAN 
     </a>
 
     <div class="split-left-content">
@@ -26,7 +26,7 @@
       <div class="q-author">
         <div class="avatar">BS</div>
         <div>
-          <div style="font-weight:600">Budi Santoso</div>
+          <div style="font-weight:600">perdi ganteng</div>
           <div style="color:rgba(255,255,255,.7);font-size:12px">Direktur Utama</div>
         </div>
         <div class="stars">★★★★★</div>
@@ -36,6 +36,11 @@
 
   <!-- RIGHT -->
   <main class="split-right">
+    <nav class="category-nav" aria-label="Kategori SuratApp">
+      <span class="category-link active" aria-current="page">Buat Surat</span>
+      <a class="category-link" href="template.html">Edit Isi Surat</a>
+    </nav>
+
     <div class="progress">
       <div class="progress-step active">
         <div class="progress-dot"></div>
@@ -59,42 +64,14 @@
 
     <form id="form">
       <div class="form-grid">
-        <div class="field">
-          <label>Nama Depan</label>
-          <input type="text" name="first_name" placeholder="Andi" required>
-        </div>
-        <div class="field">
-          <label>Nama Belakang</label>
-          <input type="text" name="last_name" placeholder="Pratama" required>
+        <div class="field full">
+          <label for="nama">Nama lengkap</label>
+          <input id="nama" type="text" name="nama" placeholder="masukkan nama" autocomplete="name" required>
         </div>
 
         <div class="field full">
-          <label>Email</label>
-          <input type="email" name="email" placeholder="andi@perusahaan.co.id" required>
-        </div>
-
-        <div class="field">
-          <label>Departemen</label>
-          <select name="departemen" required>
-            <option value="">-- pilih --</option>
-            <option>Sekretariat</option>
-            <option>Keuangan</option>
-            <option>Operasional</option>
-            <option>SDM</option>
-            <option>Humas</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Jabatan</label>
-          <input type="text" name="jabatan" placeholder="Staf Administrasi" required>
-        </div>
-
-        <div class="field full">
-          <label>Nomor Telepon</label>
-          <div class="phone-wrap">
-            <span class="flag">🇮🇩 +62</span>
-            <input type="tel" name="telepon" placeholder="812 3456 7890">
-          </div>
+          <label for="jabatan">Jabatan</label>
+          <input id="jabatan" type="text" name="jabatan" placeholder="masukkan jabatan" autocomplete="organization-title" required>
         </div>
       </div>
 
@@ -115,11 +92,8 @@
     e.preventDefault();
     const fd = new FormData(e.target);
     const pembuat = {
-      nama: `${fd.get("first_name")} ${fd.get("last_name")}`.trim(),
-      email: fd.get("email"),
-      departemen: fd.get("departemen"),
-      jabatan: fd.get("jabatan"),
-      telepon: fd.get("telepon"),
+      nama: fd.get("nama").trim(),
+      jabatan: fd.get("jabatan").trim(),
     };
     clearSession();
     patchSession({ pembuat });

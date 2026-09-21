@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Edit Isi Surat · SuratApp</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="split">
+  <aside class="split-left">
+    <a href="dashboard.html" class="brand"><span class="brand-mark">S</span> SURATAPP</a>
+    <div class="split-left-content">
+      <h1>Kelola<br>jenis surat</h1>
+      <p class="sub">Atur isi surat dengan bahasa biasa. Tidak perlu menulis kode atau menghafal tanda khusus.</p>
+    </div>
+    <div class="quote-card">
+      <div class="q-title">Pengelola surat</div>
+      <div class="q-body">Cukup tulis seperti biasa. Sistem akan mengubahnya jadi format surat otomatis.</div>
+    </div>
+  </aside>
+
+  <main class="split-right">
+    <nav class="category-nav" aria-label="Kategori SuratApp">
+      <a class="category-link" href="index.html">Buat Surat</a>
+      <span class="category-link active" aria-current="page">Kelola Surat</span>
+    </nav>
+
+    <h1 class="form-title">Daftar Template</h1>
+    <p class="form-sub">Pilih surat yang mau diubah, atau buat format baru untuk dipakai bersama.</p>
+
+    <div class="actions" style="max-width: 760px; margin-bottom: 24px;">
+      <a class="btn btn-ghost" href="index.html">← Kembali</a>
+      <a class="btn btn-primary" href="edit.html">Buat format surat</a>
+    </div>
+
+    <div id="template-list" class="template-list" style="max-width: 760px;"></div>
+  </main>
+</div>
+
+<script src="data.js"></script>
+<script>
+  const list = document.getElementById("template-list");
+  const templates = getTemplates();
+
+  list.innerHTML = templates.map((template) => `
+    <div class="template-card" style="align-items: flex-start;">
+      <span class="template-icon">${escapeHtml((template.nama || "T").slice(0, 2).toUpperCase())}</span>
+      <span class="template-copy" style="width: 100%;">
+        <strong>${escapeHtml(template.nama)}</strong>
+        <small>${escapeHtml(template.deskripsi || "Template surat resmi.")}</small>
+        <small>Field: ${escapeHtml(String((template.fields || []).length))} item</small>
+      </span>
+      <span style="display:flex; gap:8px; margin-left:auto; flex-wrap: wrap; justify-content:flex-end;">
+        <a class="btn btn-ghost" href="edit.html?key=${encodeURIComponent(template.key)}">Edit</a>
+        <button class="btn btn-primary" type="button" data-delete="${escapeHtml(template.key)}">Hapus</button>
+      </span>
+    </div>
+  `).join("");
+
+  document.querySelectorAll("[data-delete]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const key = button.getAttribute("data-delete");
+      if (!key || !window.confirm("Hapus template ini?")) return;
+      const next = deleteTemplate(key);
+      if (next.length === 0) {
+        alert("Template minimum harus ada satu data agar aplikasi tetap berfungsi.");
+        return;
+      }
+      location.reload();
+    });
+  });
+</script>
+</body>
+</html>

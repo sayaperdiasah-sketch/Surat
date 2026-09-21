@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Preview Surat · SuratApp</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="preview-page">
+<div class="preview-shell">
+  <header class="preview-header">
+    <a href="form.html" class="btn btn-ghost">← Kembali</a>
+    <div>
+      <div class="preview-eyebrow">Surat siap diperiksa</div>
+      <h1 class="preview-title">Preview Surat</h1>
+    </div>
+    <button class="btn btn-primary" id="print-button" type="button">Cetak / Simpan PDF</button>
+  </header>
+
+  <main class="paper" id="paper">
+    <div class="paper-head">
+      <div class="paper-brand">SURATAPP</div>
+      <div class="paper-address">Dokumen Surat Resmi</div>
+    </div>
+    <div class="paper-rule"></div>
+    <div class="paper-meta">
+      <span>Nomor: <strong id="letter-number"></strong></span>
+    </div>
+    <h2 id="letter-title" class="letter-title"></h2>
+    <section id="letter-content" class="letter-content"></section>
+    <div class="signature">
+      <div id="signature-place">Jakarta</div>
+      <div>Penandatangan,</div>
+      <div class="signature-space"></div>
+      <strong id="signer-name"></strong>
+      <div id="signer-role"></div>
+      <div id="signer-nip"></div>
+    </div>
+  </main>
+
+  <p class="archive-note" id="archive-note"></p>
+</div>
+
+<script src="data.js"></script>
+<script>
+  const session = getSession();
+  if (!session.pembuat || !session.template_key || !session.signer_nama || !session.data || !session.nomor_surat) {
+    location.href = !session.pembuat ? "index.html" : (!session.template_key ? "jenis.html" : (!session.signer_nama ? "penandatangan.html" : "form.html"));
+  }
+
+  const template = getTemplates().find((item) => item.key === session.template_key);
+  if (!template) {
+    location.href = "jenis.html";
+  }
+
+  document.getElementById("letter-number").textContent = session.nomor_surat;
+  document.getElementById("letter-title").textContent = template.nama;
+  document.getElementById("letter-content").innerHTML = renderTemplate(template.template, session.data);
+  document.getElementById("signer-name").textContent = session.signer_nama;
+  document.getElementById("signer-role").textContent = session.signer_jabatan;
+  document.getElementById("signer-nip").textContent = session.signer_nip ? `NIP. ${session.signer_nip}` : "";
+
+  if (!session.letter_id) {
+    const letter = saveLetter({
+      template_key: session.template_key,
+      created_by: session.pembuat.nama,
+      created_by_detail: { jabatan: session.pembuat.jabatan },
+      signer_mode: session.signer_mode,
+      signer_id: session.signer_id,
+      signer_nama: session.signer_nama,
+      signer_jabatan: session.signer_jabatan,
+      signer_nip: session.signer_nip,
+      nomor_surat: session.nomor_surat,
+      data: session.data,
+      status: "final",
+    });
+    patchSession({ letter_id: letter.id });
+    document.getElementById("archive-note").textContent = `Surat ${letter.id} otomatis tersimpan di arsip.`;
+  } else {
+    document.getElementById("archive-note").textContent = `Surat ${session.letter_id} tersimpan di arsip.`;
+  }
+
+  document.getElementById("print-button").addEventListener("click", () => window.print());
+</script>
+</body>
+</html>

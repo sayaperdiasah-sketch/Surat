@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Isi Data Surat · SuratApp</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="split">
+  <aside class="split-left">
+    <a href="dashboard.html" class="brand"><span class="brand-mark">S</span> SURATAPP</a>
+    <div class="split-left-content">
+      <h1>Lengkapi<br>data surat</h1>
+      <p class="sub">Isi field yang tersedia. Format dan isi surat akan dirender otomatis dari template yang sudah dipilih.</p>
+    </div>
+    <div class="quote-card">
+      <div class="q-title">Langkah 4 dari 4</div>
+      <div class="q-body">Data yang Anda isi akan menjadi isi surat, sedangkan data pembuat hanya tersimpan untuk arsip.</div>
+    </div>
+  </aside>
+
+  <main class="split-right">
+    <nav class="category-nav" aria-label="Kategori SuratApp">
+      <span class="category-link active" aria-current="page">Buat Surat</span>
+      <a class="category-link" href="template.html">Edit Isi Surat</a>
+    </nav>
+
+    <div class="progress">
+      <div class="progress-step active"><div class="progress-dot"></div><div class="progress-line"></div></div>
+      <div class="progress-step active"><div class="progress-dot"></div><div class="progress-line"></div></div>
+      <div class="progress-step active"><div class="progress-dot"></div><div class="progress-line"></div></div>
+      <div class="progress-step active"><div class="progress-dot"></div></div>
+    </div>
+
+    <h1 class="form-title">Isi Data Surat</h1>
+    <p class="form-sub" id="template-name">Data akan dirender ke dalam template surat.</p>
+
+    <form id="letter-form">
+      <div class="form-grid" id="field-list"></div>
+      <div class="actions">
+        <a class="btn btn-ghost" href="penandatangan.html">← Kembali</a>
+        <button type="submit" class="btn btn-primary">Lihat Preview <span style="opacity:.7">→</span></button>
+      </div>
+    </form>
+  </main>
+</div>
+
+<script src="data.js"></script>
+<script>
+  const session = getSession();
+  if (!session.pembuat || !session.template_key || !session.signer_nama) {
+    location.href = !session.pembuat ? "index.html" : (!session.template_key ? "jenis.html" : "penandatangan.html");
+  }
+
+  const template = getTemplates().find((item) => item.key === session.template_key);
+  if (!template) {
+    location.href = "jenis.html";
+  }
+
+  document.getElementById("template-name").textContent = `${template.nama} · Lengkapi data berikut.`;
+  const fieldList = document.getElementById("field-list");
+  fieldList.innerHTML = `
+    <div class="field full">
+      <label for="nomor_surat">Nomor surat</label>
+      <input id="nomor_surat" name="nomor_surat" type="text" placeholder="000/SuratApp/IX/2026" required>
+    </div>
+    ${(template.fields || []).map((field) => `
+      <div class="field ${field.type === "textarea" ? "full" : ""}">
+        <label for="${escapeHtml(field.name)}">${escapeHtml(field.label)}</label>
+        ${field.type === "textarea"
+          ? `<textarea id="${escapeHtml(field.name)}" name="${escapeHtml(field.name)}" rows="4"${field.required ? " required" : ""}></textarea>`
+          : `<input id="${escapeHtml(field.name)}" name="${escapeHtml(field.name)}" type="${escapeHtml(field.type || "text")}"${field.required ? " required" : ""}>`}
+      </div>
+    `).join("")}
+  `;
+
+  document.getElementById("letter-form").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const values = Object.fromEntries(new FormData(event.target).entries());
+    const { nomor_surat, ...data } = values;
+    patchSession({ nomor_surat, data });
+    location.href = "preview.html";
+  });
+</script>
+</body>
+</html>

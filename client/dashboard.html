@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard · SuratApp</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .dashboard-shell {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+  .dashboard-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+  }
+  .dash-card {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 24px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: var(--paper);
+    box-shadow: 0 12px 30px rgba(18, 43, 34, 0.05);
+    text-decoration: none;
+    color: inherit;
+  }
+  .dash-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: var(--lime);
+    color: var(--green-dark);
+    font-weight: 800;
+  }
+  .dash-card h2 {
+    margin: 0;
+    font-size: 24px;
+    letter-spacing: -.04em;
+  }
+  .dash-card p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .action-row {
+    margin-top: 24px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .mini-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+    border-radius: 10px;
+    background: var(--mist);
+    color: var(--green-dark);
+    text-decoration: none;
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+  <div class="dashboard-shell">
+    <div class="dashboard-top">
+      <div>
+        <div class="preview-eyebrow">SuratApp</div>
+        <h1 class="preview-title" style="text-align:left; margin-top:8px;">Dashboard</h1>
+      </div>
+      <a href="index.html" class="btn btn-primary">Buat surat baru</a>
+    </div>
+
+    <div class="dashboard-grid">
+      <a class="dash-card" href="index.html">
+        <span class="dash-badge">B</span>
+        <h2>Buat Surat</h2>
+        <p>Mulai wizard pembuatan surat dari data pembuat, pemilihan template, penandatangan, hingga preview.</p>
+      </a>
+
+      <a class="dash-card" href="template.html">
+        <span class="dash-badge">E</span>
+        <h2>Edit Isi Surat</h2>
+        <p>Perbarui nama template, HTML surat, dan field yang dikelola oleh sistem tanpa mengubah kode aplikasi.</p>
+      </a>
+
+      <a class="dash-card" href="arsip.html">
+        <span class="dash-badge">A</span>
+        <h2>Arsip Surat</h2>
+        <p>Lihat riwayat surat yang sudah dibuat dan tersimpan otomatis ke penyimpanan browser.</p>
+      </a>
+    </div>
+
+    <div class="action-row">
+      <a class="mini-btn" href="index.html">Mulai wizard</a>
+      <a class="mini-btn" href="template.html">Kelola template</a>
+      <a class="mini-btn" href="arsip.html">Lihat arsip</a>
+    </div>
+  </div>
+</body>
+</html>
