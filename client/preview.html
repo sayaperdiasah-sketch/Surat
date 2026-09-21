@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Preview · SuratApp</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar no-print">
+  <div class="topbar-inner">
+    <a href="index.html" class="brand">SuratApp</a>
+    <nav>
+      <a href="index.html">Dashboard</a>
+      <a href="arsip.html">Arsip</a>
+      <a href="template.html">Template</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container" id="app"></main>
+
+<script src="data.js"></script>
+<script>
+const id = new URLSearchParams(location.search).get("id");
+const letter = getLetter(id);
+const app = document.getElementById("app");
+
+if (!letter) {
+  app.innerHTML = '<div class="empty">Surat tidak ditemukan.</div>';
+} else {
+  const tpl = getTemplate(letter.template_key);
+  const data = {
+    ...letter.data,
+    nomor_surat:    letter.nomor_surat,
+    signer_nama:    letter.signer_nama,
+    signer_jabatan: letter.signer_jabatan,
+    signer_nip:     letter.signer_nip
+  };
+  const html = renderTemplate(tpl?.template || "<p>Template hilang.</p>", data);
+
+  app.innerHTML = `
+    <div class="row-between mb-4 no-print">
+      <div>
+        <h1 class="page-title">Preview</h1>
+        <p class="page-sub">${tpl?.nama || letter.template_key}</p>
+      </div>
+      <div class="row">
+        <a class="btn" href="arsip.html">Arsip</a>
+        <button class="btn btn-primary" onclick="window.print()">Cetak</button>
+      </div>
+    </div>
+
+    <div class="paper">${html}</div>
+
+    <div class="card mt-4 no-print">
+      <div class="section-title">Info Arsip</div>
+      <table>
+        <tr><td style="width:160px">Dibuat oleh</td><td>: ${letter.created_by}</td></tr>
+        <tr><td>Tanggal dibuat</td><td>: ${new Date(letter.created_at).toLocaleString("id-ID")}</td></tr>
+        <tr><td>Status</td><td>: ${letter.status}</td></tr>
+      </table>
+    </div>
+  `;
+}
+</script>
+</body>
+</html>
