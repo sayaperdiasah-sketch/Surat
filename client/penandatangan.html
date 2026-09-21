@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pilih Penandatangan · SuratApp</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="split">
+  <aside class="split-left">
+    <a href="dashboard.html" class="brand">
+      <span class="brand-mark">S</span> SURATAPP
+    </a>
+
+    <div class="split-left-content">
+      <h1>Tentukan<br>penandatangan</h1>
+      <p class="sub">Pilih pejabat yang akan tercetak di surat. Data ini berbeda dari data pembuat dan disimpan sebagai snapshot.</p>
+    </div>
+
+    <div class="quote-card">
+      <div class="q-title">Langkah 3 dari 4</div>
+      <div class="q-body">Penandatangan yang dipilih akan tercetak di bagian akhir surat.</div>
+    </div>
+  </aside>
+
+  <main class="split-right">
+    <nav class="category-nav" aria-label="Kategori SuratApp">
+      <span class="category-link active" aria-current="page">Buat Surat</span>
+      <a class="category-link" href="template.html">Edit Isi Surat</a>
+    </nav>
+
+    <div class="progress">
+      <div class="progress-step active"><div class="progress-dot"></div><div class="progress-line"></div></div>
+      <div class="progress-step active"><div class="progress-dot"></div><div class="progress-line"></div></div>
+      <div class="progress-step active"><div class="progress-dot"></div><div class="progress-line"></div></div>
+      <div class="progress-step"><div class="progress-dot"></div></div>
+    </div>
+
+    <h1 class="form-title">Penandatangan</h1>
+    <p class="form-sub">Siapa yang akan menandatangani surat ini?</p>
+
+    <form id="signer-form">
+      <div class="signer-mode-list">
+        <label class="signer-mode-option">
+          <input type="radio" name="signer_mode" value="selected" checked>
+          <span class="signer-mode-card"><strong>Pilih dari daftar</strong><small>Gunakan data pejabat yang sudah tersimpan</small></span>
+        </label>
+        <label class="signer-mode-option">
+          <input type="radio" name="signer_mode" value="manual">
+          <span class="signer-mode-card"><strong>Isi manual</strong><small>Untuk penandatangan An. atau Plt.</small></span>
+        </label>
+      </div>
+
+      <div id="selected-panel" class="signer-panel">
+        <div class="signer-list" id="signer-list"></div>
+      </div>
+
+      <div id="manual-panel" class="signer-panel hidden">
+        <div class="form-grid">
+          <div class="field full">
+            <label for="manual-nama">Nama penandatangan</label>
+            <input id="manual-nama" name="manual_nama" type="text" placeholder="An. Budi Santoso">
+          </div>
+          <div class="field full">
+            <label for="manual-jabatan">Jabatan</label>
+            <input id="manual-jabatan" name="manual_jabatan" type="text" placeholder="Plt. Direktur Utama">
+          </div>
+          <div class="field full">
+            <label for="manual-nip">NIP</label>
+            <input id="manual-nip" name="manual_nip" type="text" placeholder="Masukkan NIP">
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <a class="btn btn-ghost" href="jenis.html">← Kembali</a>
+        <button type="submit" class="btn btn-primary">Lanjut <span style="opacity:.7">→</span></button>
+      </div>
+    </form>
+  </main>
+</div>
+
+<script src="data.js"></script>
+<script>
+  const session = getSession();
+  if (!session.pembuat || !session.template_key) {
+    location.href = !session.pembuat ? "index.html" : "jenis.html";
+  }
+
+  const signerList = document.getElementById("signer-list");
+  signerList.innerHTML = getDirut().map((signer, index) => `
+    <label class="signer-option">
+      <input type="radio" name="signer_id" value="${escapeHtml(signer.id)}"${index === 0 ? " checked required" : ""}>
+      <span class="signer-card">
+        <span class="avatar">${escapeHtml(signer.nama.slice(0, 2).toUpperCase())}</span>
+        <span class="signer-copy"><strong>${escapeHtml(signer.nama)}</strong><small>${escapeHtml(signer.jabatan)} · NIP ${escapeHtml(signer.nip)}</small></span>
+        <span class="template-check" aria-hidden="true">✓</span>
+      </span>
+    </label>
+  `).join("");
+
+  const selectedPanel = document.getElementById("selected-panel");
+  const manualPanel = document.getElementById("manual-panel");
+  document.querySelectorAll('input[name="signer_mode"]').forEach((input) => {
+    input.addEventListener("change", () => {
+      const manual = input.value === "manual" && input.checked;
+      selectedPanel.classList.toggle("hidden", manual);
+      manualPanel.classList.toggle("hidden", !manual);
+      document.querySelectorAll('input[name="signer_id"]').forEach((signer) => signer.required = !manual);
+      document.getElementById("manual-nama").required = manual;
+      document.getElementById("manual-jabatan").required = manual;
+    });
+  });
+
+  document.getElementById("signer-form").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const mode = formData.get("signer_mode");
+    const signer = mode === "manual"
+      ? { id: "", nama: formData.get("manual_nama").trim(), jabatan: formData.get("manual_jabatan").trim(), nip: formData.get("manual_nip").trim() }
+      : getDirut().find((item) => item.id === formData.get("signer_id"));
+
+    patchSession({
+      signer_mode: mode,
+      signer_id: signer.id,
+      signer_nama: signer.nama,
+      signer_jabatan: signer.jabatan,
+      signer_nip: signer.nip,
+    });
+    location.href = "form.html";
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Arsip Surat · SuratApp</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .archive-shell {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+  .archive-list {
+    display: grid;
+    gap: 16px;
+    margin-top: 24px;
+  }
+  .archive-item {
+    padding: 20px 22px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--paper);
+  }
+  .archive-item h3 {
+    margin: 0 0 8px;
+    font-size: 22px;
+    letter-spacing: -.03em;
+  }
+  .archive-meta {
+    color: var(--muted);
+    line-height: 1.6;
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+  <div class="archive-shell">
+    <div class="dashboard-top" style="margin-bottom:0;">
+      <div>
+        <div class="preview-eyebrow">Arsip</div>
+        <h1 class="preview-title" style="text-align:left; margin-top:8px;">Riwayat Surat</h1>
+      </div>
+      <a href="dashboard.html" class="btn btn-ghost">← Dashboard</a>
+    </div>
+
+    <div id="archive-list" class="archive-list"></div>
+  </div>
+
+  <script src="data.js"></script>
+  <script>
+    const list = document.getElementById("archive-list");
+    let letters = [];
+    try {
+      letters = JSON.parse(localStorage.getItem("suratapp_letters")) || [];
+    } catch (error) {
+      letters = [];
+    }
+
+    if (!letters.length) {
+      list.innerHTML = '<div class="archive-item"><h3>Belum ada surat</h3><p class="archive-meta">Surat yang dibuat akan otomatis masuk ke sini.</p></div>';
+      return;
+    }
+
+    list.innerHTML = letters.map((letter) => {
+      const template = getTemplates().find((item) => item.key === letter.template_key) || { nama: "Template" };
+      return `
+        <article class="archive-item">
+          <h3>${escapeHtml(letter.nomor_surat || letter.id)}</h3>
+          <div class="archive-meta">
+            <div><strong>Jenis:</strong> ${escapeHtml(template.nama)}</div>
+            <div><strong>Penandatangan:</strong> ${escapeHtml(letter.signer_nama || "-")}</div>
+            <div><strong>Pembuat:</strong> ${escapeHtml(letter.created_by || "-")}</div>
+            <div><strong>Status:</strong> ${escapeHtml(letter.status || "final")}</div>
+          </div>
+        </article>
+      `;
+    }).join("");
+  </script>
+</body>
+</html>

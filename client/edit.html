@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Editor Template · SuratApp</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="split">
+  <aside class="split-left">
+    <a href="dashboard.html" class="brand"><span class="brand-mark">S</span> SURATAPP</a>
+    <div class="split-left-content">
+      <h1>Ubah isi<br>surat</h1>
+      <p class="sub">Tulis seperti biasa. Sisipkan data lewat tombol, tanpa perlu memahami kode.</p>
+    </div>
+    <div class="quote-card">
+      <div class="q-title">Editor sederhana</div>
+      <div class="q-body">Yang terlihat di sini adalah isi surat. Format teknis disimpan otomatis oleh sistem.</div>
+    </div>
+  </aside>
+
+  <main class="split-right">
+    <nav class="category-nav" aria-label="Kategori SuratApp">
+      <a class="category-link" href="index.html">Buat Surat</a>
+      <span class="category-link active" aria-current="page">Kelola Surat</span>
+    </nav>
+
+    <h1 class="form-title" id="page-title">Template baru</h1>
+    <p class="form-sub">Buat format surat sekali, lalu staf cukup mengisi data yang diperlukan.</p>
+
+    <form id="template-editor-form" novalidate>
+      <section class="editor-section">
+        <div class="section-heading"><div><span class="section-kicker">01</span><h2>Identitas surat</h2></div><p>Nama ini akan tampil saat staf memilih jenis surat.</p></div>
+        <div class="form-grid editor-width">
+          <div class="field full"><label for="template-nama">Nama jenis surat</label><input id="template-nama" name="nama" type="text" placeholder="Contoh: Surat Keterangan Kehilangan" required></div>
+          <div class="field full"><label for="template-deskripsi">Keterangan singkat</label><input id="template-deskripsi" name="deskripsi" type="text" placeholder="Contoh: Surat untuk menerangkan kehilangan dokumen"></div>
+          <input id="template-key" name="key" type="hidden">
+        </div>
+      </section>
+
+      <section class="editor-section">
+        <div class="section-heading"><div><span class="section-kicker">02</span><h2>Isi surat</h2></div><p>Tulis kalimat surat, lalu sisipkan data di tempat yang sesuai.</p></div>
+        <div class="editor-width">
+          <div class="editor-toolbar" role="toolbar" aria-label="Format isi surat">
+            <button type="button" class="toolbar-button" data-command="bold"><strong>B</strong><span>Tebal</span></button>
+            <button type="button" class="toolbar-button" data-command="italic"><em>I</em><span>Miring</span></button>
+            <button type="button" class="toolbar-button toolbar-insert" id="insert-field-button">+ <span>Sisipkan data</span></button>
+          </div>
+          <div id="template-editor" class="template-editor" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Contoh: Dengan hormat,&#10;&#10;Dengan ini kami menerangkan bahwa ..."></div>
+          <p class="editor-hint">Data yang disisipkan tampil sebagai tanda berwarna dan akan menjadi isi saat surat dibuat.</p>
+          <p id="editor-status" class="editor-status" role="status"></p>
+        </div>
+      </section>
+
+      <section class="editor-section">
+        <div class="section-heading"><div><span class="section-kicker">03</span><h2>Data yang perlu diisi</h2></div><p>Tambahkan pertanyaan yang akan dilihat staf saat membuat surat.</p></div>
+        <div id="field-list" class="field-list editor-width"></div>
+        <button type="button" class="btn btn-ghost add-field-button" id="add-field-button">+ Tambah data</button>
+      </section>
+
+      <section class="editor-preview editor-width">
+        <div class="preview-heading"><div><span class="section-kicker">HASIL</span><h2>Tampilan contoh</h2></div><span class="preview-badge">Data contoh</span></div>
+        <div id="template-preview" class="template-preview"></div>
+      </section>
+
+      <div class="actions editor-width"><a class="btn btn-ghost" href="template.html">← Kembali</a><button type="submit" class="btn btn-primary">Simpan Template</button></div>
+    </form>
+  </main>
+</div>
+
+<div id="field-dialog" class="field-dialog" hidden>
+  <div class="dialog-backdrop" data-close-dialog></div>
+  <section class="dialog-panel" role="dialog" aria-modal="true" aria-labelledby="dialog-title">
+    <button type="button" class="dialog-close" data-close-dialog aria-label="Tutup">×</button>
+    <span class="section-kicker">SISIPKAN KE SURAT</span><h2 id="dialog-title">Pilih data</h2><p>Data ini akan menjadi pertanyaan yang diisi staf.</p>
+    <div id="dialog-field-list" class="dialog-field-list"></div><p id="dialog-empty" class="dialog-empty" hidden>Tambahkan data terlebih dahulu di bagian bawah.</p>
+  </section>
+</div>
+
+<script src="data.js"></script>
+<script src="edit.js"></script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pilih Jenis Surat · SuratApp</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="split">
+  <aside class="split-left">
+    <a href="dashboard.html" class="brand">
+      <span class="brand-mark">S</span> SURATAPP
+    </a>
+
+    <div class="split-left-content">
+      <h1>Pilih template<br>yang sesuai</h1>
+      <p class="sub">Setiap template sudah memiliki format dan field yang diperlukan. Anda cukup memilih jenis suratnya.</p>
+    </div>
+
+    <div class="quote-card">
+      <div class="q-title">Langkah 2 dari 4</div>
+      <div class="q-body">Data pembuat sudah tersimpan untuk arsip. Berikutnya, pilih format surat yang akan digunakan.</div>
+    </div>
+  </aside>
+
+  <main class="split-right">
+    <nav class="category-nav" aria-label="Kategori SuratApp">
+      <span class="category-link active" aria-current="page">Buat Surat</span>
+      <a class="category-link" href="template.html">Edit Isi Surat</a>
+    </nav>
+
+    <div class="progress">
+      <div class="progress-step active"><div class="progress-dot"></div><div class="progress-line"></div></div>
+      <div class="progress-step active"><div class="progress-dot"></div><div class="progress-line"></div></div>
+      <div class="progress-step"><div class="progress-dot"></div><div class="progress-line"></div></div>
+      <div class="progress-step"><div class="progress-dot"></div></div>
+    </div>
+
+    <h1 class="form-title">Jenis Surat</h1>
+    <p class="form-sub">Pilih salah satu template untuk melanjutkan.</p>
+
+    <form id="template-form">
+      <div class="template-list" id="template-list"></div>
+
+      <div class="actions">
+        <a class="btn btn-ghost" href="index.html">← Kembali</a>
+        <button type="submit" class="btn btn-primary">Lanjut <span style="opacity:.7">→</span></button>
+      </div>
+    </form>
+  </main>
+</div>
+
+<script src="data.js"></script>
+<script>
+  const session = getSession();
+  if (!session.pembuat) {
+    location.href = "index.html";
+  }
+
+  const templateList = document.getElementById("template-list");
+  templateList.innerHTML = getTemplates().map((template, index) => `
+    <label class="template-option">
+      <input type="radio" name="template_key" value="${escapeHtml(template.key)}"${index === 0 ? " required" : ""}>
+      <span class="template-card">
+        <span class="template-icon">${escapeHtml(template.nama.slice(0, 2).toUpperCase())}</span>
+        <span class="template-copy">
+          <strong>${escapeHtml(template.nama)}</strong>
+          <small>${escapeHtml(template.deskripsi || "Template surat resmi siap pakai.")}</small>
+        </span>
+        <span class="template-check" aria-hidden="true">✓</span>
+      </span>
+    </label>
+  `).join("");
+
+  document.getElementById("template-form").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const templateKey = new FormData(event.target).get("template_key");
+    patchSession({ template_key: templateKey });
+    location.href = "penandatangan.html";
+  });
+</script>
+</body>
+</html>
