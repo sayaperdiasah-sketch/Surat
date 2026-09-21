@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Arsip · SuratApp</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="index.html" class="brand">SuratApp</a>
+    <nav>
+      <a href="index.html">Dashboard</a>
+      <a href="arsip.html" class="active">Arsip</a>
+      <a href="template.html">Template</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <h1 class="page-title">Arsip Surat</h1>
+  <p class="page-sub">Riwayat surat yang pernah dibuat.</p>
+  <div class="card" id="list"></div>
+</main>
+
+<script src="data.js"></script>
+<script>
+const list = getLetters();
+const el = document.getElementById("list");
+
+if (list.length === 0) {
+  el.innerHTML = '<div class="empty">Belum ada surat.</div>';
+} else {
+  el.innerHTML = `
+    <table>
+      <thead>
+        <tr><th>Nomor</th><th>Jenis</th><th>Dibuat oleh</th><th>Tanggal</th><th></th></tr>
+      </thead>
+      <tbody>
+        ${list.map(l => `
+          <tr>
+            <td>${l.nomor_surat || "-"}</td>
+            <td>${getTemplate(l.template_key)?.nama || l.template_key}</td>
+            <td>${l.created_by}</td>
+            <td>${new Date(l.created_at).toLocaleDateString("id-ID")}</td>
+            <td class="row">
+              <a class="btn btn-sm" href="preview.html?id=${l.id}">Lihat</a>
+              <button class="btn btn-sm btn-danger" onclick="hapus('${l.id}')">Hapus</button>
+            </td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>`;
+}
+
+function hapus(id) {
+  if (confirm("Hapus surat ini?")) {
+    deleteLetter(id);
+    location.reload();
+  }
+}
+</script>
+</body>
+</html>
