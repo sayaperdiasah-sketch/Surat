@@ -3,62 +3,128 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Dashboard · SuratApp</title>
+<title>Mulai · SuratApp</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header class="topbar">
-  <div class="topbar-inner">
-    <a href="index.html" class="brand">SuratApp</a>
-    <nav>
-      <a href="index.html" class="active">Dashboard</a>
-      <a href="arsip.html">Arsip</a>
-      <a href="template.html">Template</a>
-    </nav>
-  </div>
-</header>
+<div class="split">
 
-<main class="container">
-  <h1 class="page-title">Dashboard</h1>
-  <p class="page-sub">Pilih kategori untuk mulai bekerja.</p>
-
-  <div class="categories">
-    <a class="category" href="buat.html">
-      <h3>Buat Surat</h3>
-      <p>Bikin surat baru dari template yang tersedia.</p>
+  <!-- LEFT -->
+  <aside class="split-left">
+    <a href="dashboard.html" class="brand">
+      <span class="brand-mark">S</span> SURATAPP
     </a>
-    <a class="category" href="template.html">
-      <h3>Edit Isi Surat</h3>
-      <p>Ubah template dan field surat.</p>
-    </a>
-  </div>
 
-  <h2 style="font-size:15px;margin:0 0 12px">Surat Terakhir</h2>
-  <div class="card" id="recent"></div>
-</main>
+    <div class="split-left-content">
+      <h1>Mari buat<br>surat resmi Anda</h1>
+      <p class="sub">Isi data pembuat, pilih jenis surat, tentukan penandatangan, lalu cetak. Semua dalam 4 langkah singkat.</p>
+    </div>
+
+    <div class="quote-card">
+      <div class="q-title">Cepat dan rapi</div>
+      <div class="q-body">Surat dinas jadi dalam hitungan menit. Template sudah disiapkan, tinggal isi data dan cetak.</div>
+      <div class="q-author">
+        <div class="avatar">BS</div>
+        <div>
+          <div style="font-weight:600">Budi Santoso</div>
+          <div style="color:rgba(255,255,255,.7);font-size:12px">Direktur Utama</div>
+        </div>
+        <div class="stars">★★★★★</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- RIGHT -->
+  <main class="split-right">
+    <div class="progress">
+      <div class="progress-step active">
+        <div class="progress-dot"></div>
+        <div class="progress-line"></div>
+      </div>
+      <div class="progress-step">
+        <div class="progress-dot"></div>
+        <div class="progress-line"></div>
+      </div>
+      <div class="progress-step">
+        <div class="progress-dot"></div>
+        <div class="progress-line"></div>
+      </div>
+      <div class="progress-step">
+        <div class="progress-dot"></div>
+      </div>
+    </div>
+
+    <h1 class="form-title">Data Pembuat</h1>
+    <p class="form-sub">Informasi ini hanya untuk arsip, tidak akan tercetak di surat.</p>
+
+    <form id="form">
+      <div class="form-grid">
+        <div class="field">
+          <label>Nama Depan</label>
+          <input type="text" name="first_name" placeholder="Andi" required>
+        </div>
+        <div class="field">
+          <label>Nama Belakang</label>
+          <input type="text" name="last_name" placeholder="Pratama" required>
+        </div>
+
+        <div class="field full">
+          <label>Email</label>
+          <input type="email" name="email" placeholder="andi@perusahaan.co.id" required>
+        </div>
+
+        <div class="field">
+          <label>Departemen</label>
+          <select name="departemen" required>
+            <option value="">-- pilih --</option>
+            <option>Sekretariat</option>
+            <option>Keuangan</option>
+            <option>Operasional</option>
+            <option>SDM</option>
+            <option>Humas</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Jabatan</label>
+          <input type="text" name="jabatan" placeholder="Staf Administrasi" required>
+        </div>
+
+        <div class="field full">
+          <label>Nomor Telepon</label>
+          <div class="phone-wrap">
+            <span class="flag">🇮🇩 +62</span>
+            <input type="tel" name="telepon" placeholder="812 3456 7890">
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <a class="btn btn-ghost" href="dashboard.html">Batal</a>
+        <button type="submit" class="btn btn-primary">
+          Lanjut <span style="opacity:.7">→</span>
+        </button>
+      </div>
+    </form>
+  </main>
+
+</div>
 
 <script src="data.js"></script>
 <script>
-  const list = getLetters().slice(0, 5);
-  const el = document.getElementById("recent");
-  if (list.length === 0) {
-    el.innerHTML = '<div class="empty">Belum ada surat.</div>';
-  } else {
-    el.innerHTML = `
-      <table>
-        <thead><tr><th>Nomor</th><th>Jenis</th><th>Dibuat</th><th></th></tr></thead>
-        <tbody>
-          ${list.map(l => `
-            <tr>
-              <td>${l.nomor_surat || "-"}</td>
-              <td>${getTemplate(l.template_key)?.nama || l.template_key}</td>
-              <td>${new Date(l.created_at).toLocaleDateString("id-ID")}</td>
-              <td><a class="btn btn-sm" href="preview.html?id=${l.id}">Lihat</a></td>
-            </tr>
-          `).join("")}
-        </tbody>
-      </table>`;
-  }
+  document.getElementById("form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const pembuat = {
+      nama: `${fd.get("first_name")} ${fd.get("last_name")}`.trim(),
+      email: fd.get("email"),
+      departemen: fd.get("departemen"),
+      jabatan: fd.get("jabatan"),
+      telepon: fd.get("telepon"),
+    };
+    clearSession();
+    patchSession({ pembuat });
+    location.href = "jenis.html";
+  });
 </script>
 </body>
 </html>
